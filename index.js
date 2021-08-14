@@ -67,6 +67,17 @@ const caption = (opt) => (col) => {
 	}), col.caption)
 }
 
+const scaleTopText = (opt, data) => (col) => {
+	const dataValue = data[col.key];
+	if(!dataValue) return;
+	const persent = `${dataValue * 100}%`;
+
+	return h('text', Object.assign(opt.scalesTopTextProps(col), {
+		  x: polarToX(col.angle, opt.size / 2 * dataValue * .95).toFixed(4),
+		  y: polarToY(col.angle, opt.size / 2 * dataValue * .95).toFixed(4),
+		  dy: (opt.scalesTopTextProps(col).fontSize || 2) / 2
+	  }), persent)
+}
 
 
 const defaults = {
@@ -74,6 +85,7 @@ const defaults = {
 	axes: true, // show axes?
 	scales: 3, // show scale circles?
 	captions: true, // show captions?
+	scalesTopText: true, // show scales top text in persents?
 	captionsPosition: 1.2, // where on the axes are the captions?
 	smoothing: noSmoothing, // shape smoothing function
 	axisProps: () => ({className: 'axis'}),
@@ -81,6 +93,11 @@ const defaults = {
 	shapeProps: () => ({className: 'shape'}),
 	captionProps: () => ({
 		className: 'caption',
+		textAnchor: 'middle', fontSize: 3,
+		fontFamily: 'sans-serif'
+	}),
+	scalesTopTextProps: () => ({
+		className: 'caption-top-text',
 		textAnchor: 'middle', fontSize: 3,
 		fontFamily: 'sans-serif'
 	})
@@ -104,6 +121,11 @@ const render = (columns, data, opt = {}) => {
 	const groups = [
 		h('g', data.map(shape(columns, opt)))
 	]
+	if (opt.scalesTopText) {
+		for (let i = 0; i < data.length; i++){
+			groups.push(h('g', columns.map(scaleTopText(opt, data[i]))));
+		}
+	}
 	if (opt.captions) groups.push(h('g', columns.map(caption(opt))))
 	if (opt.axes) groups.unshift(h('g', columns.map(axis(opt))))
 	if (opt.scales > 0) {

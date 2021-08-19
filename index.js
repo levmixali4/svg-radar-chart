@@ -70,7 +70,7 @@ const caption = (opt) => (col) => {
 const scaleTopText = (opt, data) => (col) => {
 	const dataValue = data[col.key];
 	if(!dataValue) return;
-	const persent = `${dataValue * 100}%`;
+	const persent = `${Math.trunc(dataValue * 100)}%`;
 
 	return h('text', Object.assign(opt.scalesTopTextProps(col), {
 		  x: polarToX(col.angle, opt.size / 2 * dataValue * .95).toFixed(4),
